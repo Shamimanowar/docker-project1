@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { bookFlight } from "../redux/action";
+
 import SingleFlight from "./SingleFlight";
 
 function Flight() {
+  const dispatch = useDispatch();
+
+  const totalBooking = useSelector((state) => state);
+
+  const [inputValues, setInputValues] = useState({});
+
+  const handleInput = (event) => {
+    setInputValues((state) => ({
+      ...state,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch(bookFlight(inputValues));
+  };
+
   return (
     <div>
       <header id="header">
         <div className="container">
-          <img src="./img/lws-logo.svg" alt="logo" class="logo" />
+          <img src="./lws-logo.svg" alt="logo" className="logo" />
           <div className="flex items-center">
             <a className="text-white min-w-[50px] font-medium" href="#">
               Home
@@ -20,7 +41,7 @@ function Flight() {
         {/* <!-- Input Data --> */}
         <div className="mt-[160px] mx-4 md:mt-[160px] relative">
           <div className="bg-white rounded-md max-w-6xl w-full mx-auto">
-            <form className="first-hero lws-inputform">
+            <form className="first-hero lws-inputform" onSubmit={handleSubmit}>
               {/* <!-- From --> */}
               <div className="des-from">
                 <p>Destination From</p>
@@ -31,6 +52,7 @@ function Flight() {
                     name="from"
                     id="lws-from"
                     required
+                    onChange={handleInput}
                   >
                     <option value="" hidden>
                       Please Select
@@ -53,6 +75,7 @@ function Flight() {
                     name="to"
                     id="lws-to"
                     required
+                    onChange={handleInput}
                   >
                     <option value="" hidden>
                       Please Select
@@ -74,6 +97,7 @@ function Flight() {
                   name="date"
                   id="lws-date"
                   required
+                  onChange={handleInput}
                 />
               </div>
 
@@ -87,6 +111,7 @@ function Flight() {
                     name="guests"
                     id="lws-guests"
                     required
+                    onChange={handleInput}
                   >
                     <option value="" hidden>
                       Please Select
@@ -109,6 +134,7 @@ function Flight() {
                     name="ticketClass"
                     id="lws-ticketClass"
                     required
+                    onChange={handleInput}
                   >
                     <option value="" hidden>
                       Please Select
@@ -119,7 +145,12 @@ function Flight() {
                 </div>
               </div>
 
-              <button className="addCity" type="submit" id="lws-addCity">
+              <button
+                className="addCity"
+                type="submit"
+                id="lws-addCity"
+                disabled={totalBooking?.length >= 3}
+              >
                 <svg
                   width="15px"
                   height="15px"
@@ -197,8 +228,9 @@ function Flight() {
                   </div>
                 </td>
               </tr> */}
-              <SingleFlight />
-              {/* <SingleFlight /> */}
+              {totalBooking?.map((item, index) => (
+                <SingleFlight key={index} values={item} id={item?.id} />
+              ))}
             </tbody>
           </table>
         </div>
